@@ -64,8 +64,8 @@ process SelectSNPsPASS {
     input:
     file(filtered_vcf) from vcf_filtered_for_select_variants
     file(filtered_vcf_idx) from idx_vcf_filtered_for_select_variants
-    file(filtered_vcf_stats) from stats_filtered_for_select_variants
-    file(filteringStats) from filteringStats_filtered_for_select_variants
+    file("${filtered_vcf}.stats") from stats_filtered_for_select_variants
+    file(ilteringStats) from filteringStats_filtered_for_select_variants
     each file(fasta) from fasta_select_variants_PASS
     each file(fai) from fai_select_variants_PASS
     each file(dict) from dict_select_variants_PASS
