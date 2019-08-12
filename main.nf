@@ -79,15 +79,15 @@ process SelectSNPsPASS {
     gatk SelectVariants \
     -R ${fasta} \
     -V $filtered_vcf \
-    -O ${filtered_vcf.simpleName}.passed.SNPs.vcf
-    -select 'vc.isNotFiltered()' 
+    -O ${filtered_vcf.simpleName}.passed.SNPs.vcf \
+    -select 'vc.isNotFiltered()' \
     -select-type SNP
    """
 }
 
 process Vcf2maf {
 
-    tag "${passed_SNPs}"
+    tag "${vcf_passed_SNPs}"
     container 'levim/vcf2maf:1.0'
     publishDir "${params.outdir}/SelectedSomaticSNPs_MAF", mode: 'copy'
     echo true
