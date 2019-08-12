@@ -79,7 +79,7 @@ process SelectSNPsPASS {
     gatk SelectVariants \
     -R ${fasta} \
     -V $filtered_vcf \
-    -O "${filtered_vcf.simpleName}.passed.SNPs.vcf"
+    -O ${filtered_vcf.simpleName}.passed.SNPs.vcf
     -select 'vc.isNotFiltered()' 
     -select-type SNP
    """
