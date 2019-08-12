@@ -113,7 +113,7 @@ process Vcf2maf {
 
     perl /opt/vcf2maf/vcf2maf.pl \
     --input-vcf $vcf_passed_SNPs \
-    --output-maf "\${basename}.maf"  \
+    --output-maf "\${basename}.passed.SNPs.maf"  \
     --tumor-id \${tumourID} \
     --normal-id \${normalID} \
     --ref-fasta /vepdata/Homo_sapiens.GRCh37.75.dna.primary_assembly.fa \
