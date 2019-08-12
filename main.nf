@@ -46,18 +46,18 @@ Channel
 //     -select 'vc.isNotFiltered()' : only the ones with flag PASS
 //     -select-type SNP             : only SNPs
 
-process SelectVariantsSNPsPASS {
+process SelectSNPsPASS {
 
     tag "${filtered_vcf}"
     container 'broadinstitute/gatk:latest'
-    publishDir "${params.outdir}/SelectedMutect2Variants", mode: 'copy'
+    publishDir "${params.outdir}/SelectedSomaticSNPs_VCF", mode: 'copy'
 
     input:
     file(filtered_vcf) from vcf_filtered_for_select_variants
     file(unfiltered_vcf_idx) from idx_vcf_filtered_for_select_variants
     each file(fasta) from fasta_select_variants_PASS
     each file(fai) from fai_select_variants_PASS
-    each file(dict) fro dict_select_variants_PASS    
+    each file(dict) from dict_select_variants_PASS
 
     output:
     file("*vcf") into vcf_SNPs_PASS_for_vcf2maf
@@ -68,22 +68,21 @@ process SelectVariantsSNPsPASS {
     gatk FilterMutectCalls \
     -R ${fasta} \
     -V $filtered_vcf \
-    -O "${filtered_vcf}.passed.SNPs.vcf"
+    -O "${filtered_vcf.simpleName}.passed.SNPs.vcf"
     -select 'vc.isNotFiltered()' 
     -select-type SNP
    """
 }
 
-
 process Vcf2maf {
 
-    tag "${filtered_vcf}"
+    tag "${passed_SNPs}"
     container 'levim/vcf2maf:1.0'
-    publishDir "${params.outdir}/Vcf2maf", mode: 'copy'
+    publishDir "${params.outdir}/SelectedSomaticSNPs_MAF", mode: 'copy'
 
     input:
-    file(passed_vcf) from vcf_SNPs_PASS_for_vcf2maf
-    file(passed_vcf_idx) from idx_vcf_SNPs_PASS_for_vcf2maf
+    file(vcf_passed_SNPs) from vcf_SNPs_PASS_for_vcf2maf
+    file(idx_vcf_passed_SNPs) from idx_vcf_SNPs_PASS_for_vcf2maf
     each file(fasta) from fasta_vcf2maf
     each file(fai) from fai_vcf2maf
     each file(dict) from dict_vcf2maf
@@ -93,16 +92,15 @@ process Vcf2maf {
  
     script:
     """
-    temp_temp_filename=\$(echo ${filtered_vcf}) 
-    basename=\$(echo \$filename | cut -f 1 -d '.')
-    tumourID=\$(echo \$filename | cut -f 1 -d '_')
-    normalID=\$(echo \$filename | cut -f 4 -d '_')
+    basename=\$(echo ${vcf_passed_SNPs.simpleName})
+    tumourID=\$(echo \$basename | cut -f 1 -d '_')
+    normalID=\$(echo \$basename | cut -f 4 -d '_')
 
-    tumourID = ${filtered_vcf.simpleName.minus('_Normal').minus('_CIN3').minus('_bqsr').minus('_a').minus('_b')}
-
+    `echo "tumourID" $tumourID`
+    `echo "normalID" $normalID`
 
     perl /opt/vcf2maf/vcf2maf.pl \
-    --input-vcf $filtered_vcf \
+    --input-vcf $vcf_passed_SNPs \
     --output-maf "\${basename}.maf"  \
     --tumor-id \${tumourID} \
     --normal-id \${normalID} \
@@ -115,27 +113,5 @@ process Vcf2maf {
     --buffer-size 200 \
     --species homo_sapiens \
     --cache-version 89
-    """
-}
-
-process multiqc {
-    publishDir "${params.outdir}/MultiQC", mode: 'copy'
-    container 'ewels/multiqc:v1.7'
-
-    when:
-    !params.skip_multiqc
-
-    input:
-    file (bamQC) from bamQCmappedReport.collect().ifEmpty([])
-    file (bamQCrecalibrated) from bamQCrecalibratedReport.collect().ifEmpty([])
-    file (baseRecalibrator) from baseRecalibratorReport.collect().ifEmpty([])
-
-    output:
-    file "*multiqc_report.html" into multiqc_report
-    file "*_data"
-
-    script:
-    """
-    multiqc .
     """
 }
