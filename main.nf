@@ -108,8 +108,8 @@ process Vcf2maf {
     tumourID=\$(echo \$basename | cut -f 1 -d '_')
     normalID=\$(echo \$basename | cut -f 4 -d '_')
 
-    `echo "tumourID" $tumourID`
-    `echo "normalID" $normalID`
+    `echo "tumourID" \$tumourID`
+    `echo "normalID" \$normalID`
 
     perl /opt/vcf2maf/vcf2maf.pl \
     --input-vcf $vcf_passed_SNPs \
