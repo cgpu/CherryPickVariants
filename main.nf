@@ -145,8 +145,8 @@ process CountSNPs {
  
     script:
     """
-    grep -vcw '^#' * >> lines_without_comments_per_file.txt &>/dev/null
-    grep -cw '^#' * >> lines_with_comments_per_file.txt &>/dev/null
-    wc -l * >> all_lines_per_file.txt &>/dev/null
+    grep -vcw '^#' * >> lines_without_comments_per_file.txt
+    grep -cw '^#' * >> lines_with_comments_per_file.txt
+    wc -l * >> all_lines_per_file.txt
     """
 }
