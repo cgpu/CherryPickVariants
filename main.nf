@@ -14,6 +14,8 @@ if (params.fasta) {
     Channel.fromPath(params.fasta)
            .ifEmpty { exit 1, "fasta annotation file not found: ${params.fasta}" }
            .into { fasta_select_variants_PASS; fasta_vcf2maf }
+}
+
 // fai
 params.fai = params.genome ? params.genomes[ params.genome ].fai ?: false : false
 if (params.fai) {
@@ -83,6 +85,7 @@ process Vcf2maf {
     tag "${passed_SNPs}"
     container 'levim/vcf2maf:1.0'
     publishDir "${params.outdir}/SelectedSomaticSNPs_MAF", mode: 'copy'
+    echo true
 
     input:
     file(vcf_passed_SNPs) from vcf_SNPs_PASS_for_vcf2maf
