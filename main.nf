@@ -71,7 +71,7 @@ process SelectSNPsPASS {
     each file(dict) from dict_select_variants_PASS
 
     output:
-    file("*vcf") into vcf_SNPs_PASS_for_vcf2maf, vcf_SNP_count_info_channel
+    each file("*vcf") into vcf_SNPs_PASS_for_vcf2maf, vcf_SNP_count_info_channel
     file("*vcf.idx") into idx_vcf_SNPs_PASS_for_vcf2maf
 
     script:
