@@ -42,7 +42,11 @@ Channel
 
 Channel
     .fromPath("${params.inputdir}/*.filteringStats.tsv")
-    .set {  stats_filtered_for_select_variants}
+    .set {  filteringStats_filtered_for_select_variants}
+
+Channel
+    .fromPath("${params.inputdir}/*.vcf.stats")
+    .set { stats_filtered_for_select_variants}
 
 // SelectVariants only the ones with PASS:
 // Found here: 
@@ -61,6 +65,7 @@ process SelectSNPsPASS {
     file(filtered_vcf) from vcf_filtered_for_select_variants
     file(filtered_vcf_idx) from idx_vcf_filtered_for_select_variants
     file(filtered_vcf_stats) from stats_filtered_for_select_variants
+    file(filteringStats) from filteringStats_filtered_for_select_variants
     each file(fasta) from fasta_select_variants_PASS
     each file(fai) from fai_select_variants_PASS
     each file(dict) from dict_select_variants_PASS
