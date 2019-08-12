@@ -131,14 +131,14 @@ process Vcf2maf {
 
 process CountSNPs {
 
-    tag "${vcf_passed_SNPs}"
+    tag "Counting.."
     container 'levim/vcf2maf:1.0'
     publishDir "${params.outdir}/SummaryInfo", mode: 'copy'
     echo true
 
     input:
-    file (bamQC) from vcf_SNP_count_info_channel.collect().ifEmpty([])
-    file (bamQC) from maf_SNP_count_info_channel.collect().ifEmpty([])
+    file (vcf) from vcf_SNP_count_info_channel.collect().ifEmpty([])
+    file (maf) from maf_SNP_count_info_channel.collect().ifEmpty([])
 
     output:
     file("*") into counts_of_snps_channel
