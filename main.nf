@@ -71,9 +71,9 @@ process SelectSNPsPASS {
     each file(dict) from dict_select_variants_PASS
 
     output:
-    file("*vcf") into vcf_SNPs_PASS_for_vcf2maf
+    file("*vcf") into vcf_SNPs_PASS_for_vcf2maf, vcf_SNP_count_info_channel
     file("*vcf.idx") into idx_vcf_SNPs_PASS_for_vcf2maf
- 
+
     script:
     """
     gatk SelectVariants \
@@ -101,6 +101,7 @@ process Vcf2maf {
 
     output:
     file("*") into vcf2maf_annotated_files_channel
+    file("*.maf") into maf_SNP_count_info_channel
  
     script:
     """
@@ -125,5 +126,25 @@ process Vcf2maf {
     --buffer-size 200 \
     --species homo_sapiens \
     --cache-version 89
+    """
+}
+
+process CountSNPs {
+
+    tag "${vcf_passed_SNPs}"
+    container 'levim/vcf2maf:1.0'
+    publishDir "${params.outdir}/SummaryInfo", mode: 'copy'
+    echo true
+
+    input:
+    file (bamQC) from vcf_SNP_count_info_channel.collect().ifEmpty([])
+    file (bamQC) from maf_SNP_count_info_channel.collect().ifEmpty([])
+
+    output:
+    file("*") into counts_of_snps_channel
+ 
+    script:
+    """
+    grep -vcw '^#' * >> lines_without_comments_per_file.txt &>/dev/null
     """
 }
