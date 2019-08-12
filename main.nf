@@ -76,7 +76,7 @@ process SelectSNPsPASS {
  
     script:
     """
-    gatk FilterMutectCalls \
+    gatk SelectVariants \
     -R ${fasta} \
     -V $filtered_vcf \
     -O "${filtered_vcf.simpleName}.passed.SNPs.vcf"
